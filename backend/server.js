@@ -12,17 +12,14 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// MongoDB Connection
+// MongoDB Connection (non-blocking)
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/mernapp', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('MongoDB Connected Successfully');
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/mernapp');
+    console.log('✅ MongoDB Connected Successfully');
   } catch (error) {
-    console.error('MongoDB connection error:', error);
-    process.exit(1);
+    console.error('⚠️  MongoDB connection error:', error.message);
+    console.log('⚠️  Server will continue without database...');
   }
 };
 
@@ -39,35 +36,27 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Basic Routes
+// Root Route
 app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to MERN API' });
-});
-
-// Sample API Route
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'API is working!' });
-});
-
-// Error Handling Middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ 
-    message: 'Something went wrong!',
-    error: process.env.NODE_ENV === 'development' ? err.message : {}
+  res.json({ 
+    message: 'Welcome to MERN API',
+    version: '1.0.0'
   });
 });
 
-// 404 Handler
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+// Test API Route
+app.get('/api/test', (req, res) => {
+  res.json({ 
+    message: 'API is working!',
+    timestamp: new Date().toISOString()
+  });
 });
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
 module.exports = app;
