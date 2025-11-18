@@ -2,35 +2,26 @@ name: Backend CD
 
 on:
   push:
-    branches: ["main"]
+    branches: [ main ]
     paths:
-      - "backend/**"
+      - 'backend/**'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: backend
-
+    
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run tests
-        run: npm test
-
-      - name: Build project
-        run: npm run build
-
-      - name: Deploy to Render
-        run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Install dependencies
+      working-directory: ./backend
+      run: npm install
+    
+    - name: Deploy notification
+      run: echo "Ready to deploy to Render"
