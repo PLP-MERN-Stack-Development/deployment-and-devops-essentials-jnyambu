@@ -13,6 +13,16 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-    
+
     - name: Deploy notification
       run: echo "Backend ready for deployment to Render"
+
+    - name: Trigger Render Deployment
+      run: |
+        if [ -z "${{ secrets.RENDER_DEPLOY_HOOK }}" ]; then
+          echo "❌ ERROR: Missing RENDER_DEPLOY_HOOK secret"
+          exit 1
+        fi
+
+        echo "🚀 Triggering Render deploy..."
+        curl -L -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
