@@ -1,0 +1,80 @@
+name: Manual Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to rollback'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+      version:
+        description: 'Version to rollback to (leave empty for previous)'
+        required: false
+      component:
+        description: 'Component to rollback'
+        required: true
+        type: choice
+        options:
+          - backend
+          - frontend
+          - both
+
+jobs:
+  rollback:
+    name: Rollback ${{ github.event.inputs.component }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.inputs.version || 'HEAD~1' }}
+
+    - name: Rollback Backend
+      if: github.event.inputs.component == 'backend' || github.event.inputs.component == 'both'
+      run: |
+        if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+          HOOK=${{ secrets.RENDER_BACKEND_PROD_DEPLOY_HOOK }}
+        else
+          HOOK=${{ secrets.RENDER_BACKEND_STAGING_DEPLOY_HOOK }}
+        fi
+        curl -X POST "$HOOK"
+
+    - name: Rollback Frontend
+      if: github.event.inputs.component == 'frontend' || github.event.inputs.component == 'both'
+      run: |
+        if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+          HOOK=${{ secrets.RENDER_FRONTEND_PROD_DEPLOY_HOOK }}
+        else
+          HOOK=${{ secrets.RENDER_FRONTEND_STAGING_DEPLOY_HOOK }}
+        fi
+        curl -X POST "$HOOK"
+
+    - name: Verify rollback
+      run: sleep 60
+
+    - name: Health check after rollback
+      run: |
+        if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+          URL=${{ secrets.PROD_BACKEND_URL }}
+        else
+          URL=${{ secrets.STAGING_BACKEND_URL }}
+        fi
+        
+        response=$(curl -s -o /dev/null -w "%{http_code}" $URL/health)
+        if [ $response -ne 200 ]; then
+          echo "Rollback verification failed"
+          exit 1
+        fi
+        echo "Rollback successful"
+
+    - name: Notify team
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        text: '⚠️ Rollback completed for ${{ github.event.inputs.component }} in ${{ github.event.inputs.environment }}'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
