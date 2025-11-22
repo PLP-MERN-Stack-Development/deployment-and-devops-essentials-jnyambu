@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MERN Stack App - Frontend</title>
+    <title>MERN Stack App</title>
     <style>
         * {
             margin: 0;
@@ -198,6 +198,20 @@
             opacity: 0.9;
         }
 
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         @media (max-width: 768px) {
             header h1 {
                 font-size: 2.5rem;
@@ -216,13 +230,13 @@
 <body>
     <div class="container">
         <header>
-            <h1>🚀 MERN Stack Frontend</h1>
-            <p>React Application Connected to Node.js Backend</p>
+            <h1>🚀 MERN Stack App</h1>
+            <p>MongoDB + Express + React + Node.js</p>
         </header>
 
         <div class="main-content">
             <div class="status-card">
-                <h2>Backend Connection Status</h2>
+                <h2>System Status</h2>
                 <div class="status-indicator">
                     <span class="status-dot" id="backendStatus"></span>
                     <span id="backendStatusText">Checking backend...</span>
@@ -235,24 +249,24 @@
 
             <div class="features">
                 <div class="feature-card">
-                    <div class="feature-icon">⚛️</div>
-                    <h3>React Frontend</h3>
-                    <p>Modern React application with hooks and components</p>
+                    <div class="feature-icon">⚡</div>
+                    <h3>Fast & Efficient</h3>
+                    <p>Built with modern technologies for optimal performance</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🔗</div>
-                    <h3>API Integration</h3>
-                    <p>Seamlessly connected to Express backend</p>
+                    <div class="feature-icon">🔒</div>
+                    <h3>Secure</h3>
+                    <p>Industry-standard security practices implemented</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🎨</div>
-                    <h3>Beautiful UI</h3>
-                    <p>Responsive design that works on all devices</p>
+                    <div class="feature-icon">📱</div>
+                    <h3>Responsive</h3>
+                    <p>Works seamlessly on all devices and screen sizes</p>
                 </div>
             </div>
 
             <div class="api-test">
-                <h3>🧪 Test Backend Connection</h3>
+                <h3>🧪 Test API Endpoints</h3>
                 <button class="test-button" onclick="testHealth()">Test Health Check</button>
                 <button class="test-button" onclick="testAPI()">Test API</button>
                 <button class="test-button" onclick="fetchItems()">Get Items</button>
@@ -269,8 +283,7 @@
     </div>
 
     <script>
-        // Get API URL from environment or use default
-        const API_URL = window.REACT_APP_API_URL || 'https://your-backend.onrender.com';
+        const API_URL = 'http://localhost:10000';
 
         async function checkStatus() {
             try {

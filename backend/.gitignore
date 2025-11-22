@@ -35,3 +35,9 @@ echo ".env" >> .gitignore
 echo "node_modules/" >> .gitignore
 echo ".cache/" >> .gitignore
 
+# Make sure your .gitignore includes these
+echo "node_modules/" >> .gitignore
+echo ".env" >> .gitignore
+echo "*.env" >> .gitignore
+echo ".env.local" >> .gitignore
+echo ".env.production" >> .gitignore
